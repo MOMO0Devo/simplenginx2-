@@ -6,32 +6,18 @@ metadata:
 data:
   # Context section: defines variables available in notification templates
   context: |
-    argocdUrl: "http:localhost:8080"  # Replace with your ArgoCD server URL
+    argocdUrl: "http://localhost:8080"  # Replace with your ArgoCD server URL
 
   # Email service configuration: SMTP settings for sending emails
   service.email: |
     username: mamkm8276@gmail.com        # Email username (set as secret)
     password: ovqsuuxtavbspgfw         # Email password (set as secret)
-    host: mamkm8276@gmail.com              # SMTP server host
-    port: 465                         # SMTP server port (SSL)
-    from: mamkm8276@gmail.com             # Sender email address
+    host: smtp.gmail.com                 # SMTP server host
+    port: 465                            # SMTP server port (SSL)
+    from: mamkm8276@gmail.com            # Sender email address
 
-  # Template for Degraded health: email content when app health is degraded
-  template.email-health-degraded: |
-    email:
-      subject: "[ArgoCD] {{.app.metadata.name}} health is {{.app.status.health.status}}"
-    message: |
-      🚨 Application: {{.app.metadata.name}}
-      📂 Namespace: {{.app.metadata.namespace}}
-      🔄 Sync status: {{.app.status.sync.status}}
-      📌 Revision: {{.app.status.sync.revision}}
-      ❤️ Health status: {{.app.status.health.status}}
-      📝 Health message: {{.app.status.health.message}}
-      ⚙️ Last operation: {{ if .app.operationState }}{{ .app.operationState.phase }}{{ else }}<none>{{ end }}
-      🔗 Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
-
-  # Template for Deployed (synced + healthy): email content when app is successfully deployed
-  template.email-deployed: |
+  # Template for Deployed (synced + healthy)
+  template.email-mohamad-deployed: |
     email:
       subject: "[ArgoCD] {{.app.metadata.name}} successfully deployed 🎉"
     message: |
@@ -44,15 +30,25 @@ data:
       Finished at: {{ if .app.operationState }}{{ .app.operationState.finishedAt }}{{ end }}
       🔗 Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
 
-  # Trigger for Degraded health: sends email when app health is degraded
-  trigger.on-health-degraded: |
-    - when: app.status.health.status == 'Degraded'
-      send: [email-health-degraded]
+  # Template for Failed deployment
+  template.email-mohamad-failed: |
+    email:
+      subject: "[ArgoCD] {{.app.metadata.name}} deployment FAILED ❌"
+    message: |
+      🚨 Application: {{.app.metadata.name}}
+      📂 Namespace: {{.app.metadata.namespace}}
+      🔄 Sync status: {{.app.status.sync.status}}
+      ⚙️ Last operation: {{ if .app.operationState }}{{ .app.operationState.phase }}{{ else }}<none>{{ end }}
+      ❤️ Health status: {{.app.status.health.status}}
+      📝 Health message: {{.app.status.health.message}}
+      🔗 Details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
 
-  # Trigger for Deployed: sends email when app is synced and healthy
-  trigger.on-deployed: |
-    - when: app.status.operationState.phase == 'Succeeded' and app.status.health.status == 'Healthy'
-      send: [email-deployed]
+  # Trigger for successful deployment for your app
+  trigger.mohamad-on-deployed: |
+    - when: app.metadata.name == 'mohamad' && app.status.operationState.phase == 'Succeeded' && app.status.health.status == 'Healthy'
+      send: [email-mohamad-deployed]
 
-# This ConfigMap configures ArgoCD Notifications to send email alerts for application health changes.
-# It defines SMTP settings, notification templates, and triggers for sending emails on specific events.
+  # Trigger for failed deployment for your app
+  trigger.mohamad-on-failed: |
+    - when: app.metadata.name == 'mohamad' && (app.status.operationState.phase == 'Failed' || app.status.health.status == 'Degraded')
+      send: [email-mohamad-failed]
