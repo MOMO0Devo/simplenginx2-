@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: hello
-          image: nginx
+          image: ngin
           ports:
             - containerPort: 80
 ---
