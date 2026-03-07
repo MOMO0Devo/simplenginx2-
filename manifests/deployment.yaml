@@ -42,22 +42,19 @@ spec:
       nodePort: 30007
 ---
 # 4️⃣ Ingress
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ngnx-ingress
-  namespace: nginx
-  annotations:
-    kubernetes.io/ingress.class: nginx
-spec:
-  rules:
-    - host: www.nginx.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: hello-world
-                port:
-                  number: 80
+#apiVersion: networking.k8s.io/v1
+#metadata:
+#  name: ngnx-ingress
+#  namespace: nginx
+#  annotations:
+#    kubernetes.io/ingress.class: nginx
+#spec:
+#  rules:
+#    - host: www.nginx.com
+#      http:
+#          - path: /
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: hello-world
+##                  number: 80
