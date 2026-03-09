@@ -11,7 +11,7 @@ metadata:
   name: hello-world
   namespace: nginx
 spec:
-  replicas: 10
+  replicas: 13
   selector:
     matchLabels:
       app: hello-world
