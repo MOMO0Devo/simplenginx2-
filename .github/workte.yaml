@@ -3,7 +3,8 @@ name: Hello World
 on: 
   push:
     branches:
-      - main   # triggers when you push to main
+      - main 
+      - master  # triggers when you push to main
 
 jobs:
   say-hello:
